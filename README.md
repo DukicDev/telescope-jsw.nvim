@@ -40,7 +40,7 @@ require("lazy").setup({
     config = function()
       require("telescope").load_extension("telescope-jsw")
       require("telescope-jsw").setup({
-        url = "https://your-jira-domain.atlassian.net/browse/",
+        url = "https://your-jira-domain.atlassian.net",
         jql = "project = MYPROJECT AND status = 'To Do'", -- Optional: Set default JQL filter, otherwise "assignee = currentUser()" is used
       })
     end,
