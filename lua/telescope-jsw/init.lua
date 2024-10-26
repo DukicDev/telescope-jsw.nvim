@@ -12,7 +12,7 @@ local config = {
 }
 
 local setup = function(opts)
-	config.url = opts.url or config.url
+	config.url = opts.url:gsub("/$", "") or config.url
 	config.jql = opts.jql or config.jql
 end
 
