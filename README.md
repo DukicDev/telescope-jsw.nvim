@@ -18,6 +18,10 @@
 
 ## Installation
 
+>[!IMPORTANT]
+>Your User Mail and Jira API Token need to be set as environment variables. \
+>JIRA_USER_EMAIL and JIRA_API_TOKEN
+
 ### Requirements
 
 - **Neovim 0.5+**
@@ -43,6 +47,7 @@ require("lazy").setup({
   },
 })
 ```
+
 
 ## Usage
 To easily launch the plugin, add a keymap in your Neovim init.lua:
