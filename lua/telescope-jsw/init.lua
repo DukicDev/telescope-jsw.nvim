@@ -16,7 +16,23 @@ local setup = function(opts)
 	config.jql = opts.jql or config.jql
 end
 
+local cache = {
+	issues = nil,
+	last_fetch = 0,
+}
+local cache_duration = 60 * 10
+
+local set_cache = function(issues)
+	cache.issues = issues
+	cache.last_fetch = os.time()
+end
+
 local get_issues = function(url, jql, callback)
+	local current_time = os.time()
+	if cache.issues and (current_time - cache.last_fetch < cache_duration) then
+		callback(cache.issues)
+		return
+	end
 	local api_token = os.getenv("JIRA_API_TOKEN")
 	local user_email = os.getenv("JIRA_USER_EMAIL")
 
@@ -55,6 +71,7 @@ local get_issues = function(url, jql, callback)
 				vim.schedule(function()
 					if json and json.issues then
 						if next(json.issues) ~= nil then
+							set_cache(json.issues)
 							callback(json.issues)
 						else
 							vim.notify("No Issues assigned to you! Congrats :D", vim.log.levels.INFO)
