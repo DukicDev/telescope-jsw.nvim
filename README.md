@@ -15,6 +15,7 @@
 - **Enhanced Navigation**: Quickly navigate through your tasks and issues without leaving the editor.
 - **Open Jira**: Selecting an Entry opens the issue in your beloved Jira UI.
 
+
 ## Installation
 
 ### Requirements
@@ -53,7 +54,12 @@ vim.keymap.set(
     { noremap = true, silent = true }
 )
 ```
-This keymap binds the telescope-jsw extension to <leader>ji, allowing you to quickly open the Jira issue search within Neovim.
+This keymap binds the telescope-jsw extension to leader-ji, allowing you to quickly open the Jira issue search within Neovim.
+
+
+
+## Screenshot
+![Screenshot](assets/Screenshot.png?raw=true)
 
 ## Planned Features
 - [ ] Caching
