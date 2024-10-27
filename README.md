@@ -42,6 +42,7 @@ require("lazy").setup({
       require("telescope-jsw").setup({
         url = "https://your-jira-domain.atlassian.net",
         jql = "project = MYPROJECT AND status = 'To Do'", -- Optional: Set default JQL filter, otherwise "assignee = currentUser()" is used
+        cache_duration = 60 * 5 -- Optional: Cache duration in seconds. Default is 60*10 (10min)
       })
     end,
   },
@@ -50,6 +51,20 @@ require("lazy").setup({
 
 
 ## Usage
+```lua
+require('telescope').extensions['telescope-jsw'].jira_issues()
+```
+gets the jira issues and opens telescope. 
+
+### Options when calling jira_issues()
+```lua
+{
+  no_cache = true -- Default: false
+}
+```
+>[!NOTE]
+>The cache file is stored at vim.fn.stdpath("cache")/telescope_jsw_cache.json
+
 To easily launch the plugin, add a keymap in your Neovim init.lua:
 ```lua
 vim.keymap.set(
@@ -58,8 +73,14 @@ vim.keymap.set(
     "<cmd>lua require('telescope').extensions['telescope-jsw'].jira_issues()<CR>",
     { noremap = true, silent = true }
 )
+vim.keymap.set(
+    "n",
+    "<leader>jr",
+    "<cmd>lua require('telescope').extensions['telescope-jsw'].jira_issues({no_cache = true})<CR>",
+    { noremap = true, silent = true }
+)
 ```
-This keymap binds the telescope-jsw extension to leader-ji, allowing you to quickly open the Jira issue search within Neovim.
+This keymap binds the telescope-jsw extension to leader-ji, allowing you to quickly open the Jira issue search within Neovim. leader-jr always sends a request, refreshing the cache.
 
 
 
