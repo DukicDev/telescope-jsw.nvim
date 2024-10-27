@@ -8,15 +8,63 @@ local Job = require("plenary.job")
 
 local config = {
 	url = nil,
-	jql = "assignee=currentUser()",
+	jql = "assignee=currentUser() and Status != Done",
+	cache_duration = 60 * 10,
 }
 
 local setup = function(opts)
 	config.url = opts.url:gsub("/$", "") or config.url
 	config.jql = opts.jql or config.jql
+	config.cache_duration = opts.cache_duration or config.cache_duration
 end
 
-local get_issues = function(url, jql, callback)
+local cache = {
+	issues = nil,
+	last_fetch = 0,
+}
+-- Cache duration in seconds
+local cache_duration = config.cache_duration
+
+local cache_file = vim.fn.stdpath("cache") .. "telescope_jsw_cache.json"
+
+local save_cache_to_file = function()
+	local cache_data = {
+		issues = cache.issues,
+		last_fetch = cache.last_fetch,
+	}
+	local file = io.open(cache_file, "w")
+	if file then
+		file:write(vim.fn.json_encode(cache_data))
+		file:close()
+	else
+		vim.notify("Error writing to cache file.", vim.log.levels.ERROR)
+	end
+end
+
+local load_cache_from_file = function()
+	local file = io.open(cache_file, "r")
+	if file then
+		local content = file:read("*a")
+		file:close()
+		local cache_data = vim.fn.json_decode(content)
+		if cache_data and os.time() - cache_data.last_fetch < cache_duration then
+			cache.issues = cache_data.issues
+			cache.last_fetch = cache_data.last_fetch
+		else
+			cache.issues = nil
+			cache.last_fetch = 0
+		end
+	end
+end
+
+load_cache_from_file()
+
+local get_issues = function(url, jql, no_cache, callback)
+	local current_time = os.time()
+	if not no_cache and cache.issues and (current_time - cache.last_fetch < cache_duration) then
+		callback(cache.issues)
+		return
+	end
 	local api_token = os.getenv("JIRA_API_TOKEN")
 	local user_email = os.getenv("JIRA_USER_EMAIL")
 
@@ -55,6 +103,9 @@ local get_issues = function(url, jql, callback)
 				vim.schedule(function()
 					if json and json.issues then
 						if next(json.issues) ~= nil then
+							cache.issues = json.issues
+							cache.last_fetch = os.time()
+							save_cache_to_file()
 							callback(json.issues)
 						else
 							vim.notify("No Issues assigned to you! Congrats :D", vim.log.levels.INFO)
@@ -115,6 +166,7 @@ end
 
 local issues = function(opts)
 	opts = opts or {}
+	local no_cache = opts.no_cache or false
 	local url = config.url
 	local jql = config.jql
 	local issue_endpoint = "/browse/"
@@ -124,7 +176,7 @@ local issues = function(opts)
 		return
 	end
 
-	get_issues(url, jql, function(issues)
+	get_issues(url, jql, no_cache, function(issues)
 		local finder = finders.new_table({
 			results = issues,
 			entry_maker = function(entry)
