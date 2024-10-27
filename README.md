@@ -88,5 +88,5 @@ This keymap binds the telescope-jsw extension to leader-ji, allowing you to quic
 ![Screenshot](assets/Screenshot.png?raw=true)
 
 ## Planned Features
-- [ ] Caching
+- [x] Caching
 - [ ] Transitioning Issues
