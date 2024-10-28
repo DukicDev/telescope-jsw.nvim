@@ -92,6 +92,8 @@ local get_issues = function(url, jql, no_cache, callback)
 			search_url,
 			"--data-urlencode",
 			"jql=" .. jql,
+			"--data-urlencode",
+			"maxResults=100",
 			"-H",
 			"Content-Type: application/json",
 		},
