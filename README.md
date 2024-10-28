@@ -41,7 +41,7 @@ require("lazy").setup({
       require("telescope").load_extension("telescope-jsw")
       require("telescope-jsw").setup({
         url = "https://your-jira-domain.atlassian.net",
-        jql = "project = MYPROJECT AND status = 'To Do'", -- Optional: Set default JQL filter, otherwise "assignee = currentUser()" is used
+        jql = "project = MYPROJECT AND status = 'To Do'", -- Optional: Set default JQL filter, otherwise "assignee = currentUser() and Status != Done" is used
         cache_duration = 60 * 5 -- Optional: Cache duration in seconds. Default is 60*10 (10min)
       })
     end,
